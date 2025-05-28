@@ -7,7 +7,7 @@ import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
 
-from utils.preprocessing import preprocess_data, get_user_input
+from utils.preprocessing import preprocess_data, get_user_input, feature_selection_by_correlation
 from utils.evaluation import evaluate_model
 
 # --- App Setup ---
@@ -45,11 +45,101 @@ if uploaded_file:
         X = df.drop(columns=[target_column])
         y = df[target_column]
 
+        label_encoders = {}
+        X_processed = X.copy()
+
+        # Handle missing values
+        if True:
+            for col in X_processed.columns:
+                if X_processed[col].dtype == 'object':
+                    X_processed[col] = X_processed[col].fillna(X_processed[col].mode()[0])
+                else:
+                    X_processed[col] = X_processed[col].fillna(X_processed[col].median())
+
+        # Encode categorical columns
+        for col in X_processed.select_dtypes(include=['object', 'category']).columns:
+            le = LabelEncoder()
+            X_processed[col] = le.fit_transform(X_processed[col].astype(str))
+            label_encoders[col] = le
+
+        # Encode target if categorical
+        y_encoded = y
+        if y.dtype == 'object' or str(y.dtype).startswith('category'):
+            le_target = LabelEncoder()
+            y_encoded = le_target.fit_transform(y.astype(str))
+            label_encoders['target'] = le_target
+
+        X = X_processed
+        y = y_encoded
+
+        st.subheader("🔍 Feature Selection and Data Preprocessing")
+
+        drop_high_corr = st.checkbox("Drop Highly Correlated Features", value=False)
+        high_corr_threshold = None
+        if drop_high_corr:
+            high_corr_threshold = st.slider("High Correlation Threshold", min_value=0.5, max_value=0.99, value=0.8, step=0.01)
+
+        drop_low_target_corr = st.checkbox("Drop Features Weakly Correlated with Target", value=False)
+        low_target_corr_threshold = None
+        if drop_low_target_corr:
+            low_target_corr_threshold = st.slider("Low Target Correlation Threshold", min_value=0.0, max_value=1.0, value=0.1, step=0.01)
+
+        if not isinstance(y, pd.Series):
+            y = pd.Series(y)     # type: ignore
+
+        # Apply correlation-based feature selection
+        X, dropped = feature_selection_by_correlation(
+            X,
+            y, # type: ignore
+            drop_high_corr=drop_high_corr,
+            high_corr_threshold=high_corr_threshold if high_corr_threshold is not None else 0.8,
+            drop_low_target_corr=drop_low_target_corr,
+            low_target_corr_threshold=low_target_corr_threshold if low_target_corr_threshold is not None else 0.1
+        )
+
+
+
+        # Data Preprocessing
+        #st.subheader("⚙️ Preprocessing Options")
+
+        use_feature_selection = st.checkbox("Drop low-variance features")
+        variance_threshold = 0.01
+        if use_feature_selection:
+            variance_threshold = st.slider("Variance threshold", 0.0, 0.1, 0.01)
+
+        use_outlier_removal = st.checkbox("Remove outliers (IQR method)")
+        use_pca = st.checkbox("Apply PCA (dimensionality reduction)")
+        n_components = None
+        if use_pca:
+            if X.shape[1] > 1:
+                n_components = st.slider(
+                    "Number of PCA components", 1, X.shape[1], max(1, int(X.shape[1] / 2))
+                )
+            else:
+                st.warning("Not enough features to apply PCA.")
+                use_pca = False  # Disable PCA since it’s invalid
+
+
+
         # --- Preprocessing ---
-        X_train, X_test, y_train, y_test, scaler, label_encoders = preprocess_data(X, y)
+        X_train, X_test, y_train, y_test, scaler, pca, dropped_variance = preprocess_data(
+            X, y, # type: ignore
+            variance_threshold=variance_threshold if use_feature_selection else 0.0,
+            remove_outliers=use_outlier_removal,
+            apply_pca=use_pca,
+            pca_components=n_components
+        )
+
+        all_dropped_features = set(dropped + dropped_variance)
+        if all_dropped_features:
+            st.success(f"Dropped {len(all_dropped_features)} features: {', '.join(all_dropped_features)}")
+        else:
+            st.info("No features were dropped.")
+
+
 
         # --- Model Selection ---
-        st.subheader("🤖 Choose a Machine Learning Model")
+        st.sidebar.subheader("🤖 Choose a Machine Learning Model")
         model_options = {
             "Linear Regression": "linear_regression",
             "Logistic Regression": "logistic_regression",
@@ -57,7 +147,7 @@ if uploaded_file:
             "Random Forest": "random_forest",
             "Gradient Boosting": "gradient_boosting"
         }
-        selected_model_name = st.selectbox("📌 Select Model", list(model_options.keys()))
+        selected_model_name = st.sidebar.selectbox("📌 Select Model", list(model_options.keys()))
         model_module_name = model_options[selected_model_name]
 
         # --- Import Model Dynamically ---

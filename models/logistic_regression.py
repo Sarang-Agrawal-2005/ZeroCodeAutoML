@@ -5,7 +5,7 @@ def get_model_params_ui():
     """
     Display Streamlit UI to collect Logistic Regression hyperparameters.
     """
-    penalty = st.selectbox(
+    penalty = st.sidebar.selectbox(
         "Penalty",
         options=['l2', 'none', 'l1', 'elasticnet'],
         index=0,
@@ -18,20 +18,20 @@ def get_model_params_ui():
         'l1': ['liblinear', 'saga'],
         'elasticnet': ['saga']
     }
-    solver = st.selectbox(
+    solver = st.sidebar.selectbox(
         "Solver",
         options=solver_options[penalty],
         index=0,
         help="Algorithm to use in optimization"
     )
 
-    c = st.number_input("Inverse of regularization strength (C)", min_value=0.01, max_value=10.0, value=1.0, step=0.01)
+    c = st.sidebar.number_input("Inverse of regularization strength (C)", min_value=0.01, max_value=10.0, value=1.0, step=0.01)
 
-    max_iter = st.slider("Maximum iterations", 50, 500, 100, step=10)
+    max_iter = st.sidebar.slider("Maximum iterations", 50, 500, 100, step=10)
 
     l1_ratio = None
     if penalty == 'elasticnet':
-        l1_ratio = st.slider("L1 ratio (only for elasticnet)", 0.0, 1.0, 0.5, step=0.05)
+        l1_ratio = st.sidebar.slider("L1 ratio (only for elasticnet)", 0.0, 1.0, 0.5, step=0.05)
 
     return {
         "penalty": penalty,
