@@ -1,7 +1,7 @@
 from sklearn.linear_model import LinearRegression
 import streamlit as st
 
-def get_model_params_ui():
+def get_model_params_ui(problem_type):
     """
     Display Streamlit UI widgets for Linear Regression parameters.
     """
@@ -13,7 +13,7 @@ def get_model_params_ui():
         "n_jobs": n_jobs
     }
 
-def get_model(params):
+def get_model(params,problem_type):
     """
     Returns an untrained LinearRegression model instance with given parameters.
     """

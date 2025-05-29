@@ -1,7 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 import streamlit as st
 
-def get_model_params_ui():
+def get_model_params_ui(problem_type):
     """
     Display Streamlit UI to collect Logistic Regression hyperparameters.
     """
@@ -41,7 +41,7 @@ def get_model_params_ui():
         "l1_ratio": l1_ratio
     }
 
-def get_model(params):
+def get_model(params, problem_type):
     """
     Returns a LogisticRegression model instance with given parameters.
     """

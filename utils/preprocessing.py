@@ -119,41 +119,50 @@ def preprocess_data(
 def get_user_input(X: pd.DataFrame, label_encoders: dict):
     """
     Dynamically creates Streamlit inputs for each feature column.
-    Applies label encoding where needed.
-    Returns a single-row DataFrame of user inputs or None if no input yet.
+    Uses selectboxes for categorical features and number_input for numeric ones.
+    Returns a single-row DataFrame of user inputs or None if input is invalid.
     """
-
     st.write("🔧 Enter values for each feature to predict:")
 
     input_data = {}
     for col in X.columns:
-        dtype = X[col].dtype
-
-        if pd.api.types.is_numeric_dtype(dtype):
+        if col in label_encoders:
+            # Categorical column: show a dropdown with known categories
+            options = label_encoders[col].classes_.tolist()
+            val = st.selectbox(f"{col}", options)
+        elif pd.api.types.is_numeric_dtype(X[col]):
+            # Numeric column: show number input with median as default
             val = st.number_input(f"{col}", value=float(X[col].median()))
         else:
+            # Fallback for other types
             val = st.text_input(f"{col}", value=str(X[col].mode()[0]))
-
+        
         input_data[col] = val
 
     if st.button("Predict"):
         input_df = pd.DataFrame([input_data])
 
-        # Apply label encoders to categorical columns
+        # Encode categorical columns using label encoders
         for col in input_df.columns:
             if col in label_encoders:
                 le = label_encoders[col]
                 try:
                     input_df[col] = le.transform([input_df[col][0]])
                 except ValueError:
-                    st.error(f"Unknown category '{input_df[col][0]}' in column '{col}'. Please enter a known category.")
+                    st.error(f"❗ Unknown category '{input_df[col][0]}' in '{col}'. Valid options: {', '.join(le.classes_)}")
                     return None
             else:
+                # Ensure numeric conversion for other types
                 input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
+
+        if input_df.isnull().any().any():
+            st.error("❗ Some inputs are invalid or missing. Please check your entries.")
+            return None
 
         return input_df
 
     return None
+
 
 
 
@@ -249,8 +258,6 @@ def correlation_feature_selection_ui(X, y):
     return X
 
 
-# Usage example (replace with your data):
-# X_processed = correlation_feature_selection_ui(X_processed, y_encoded)
 
      
 

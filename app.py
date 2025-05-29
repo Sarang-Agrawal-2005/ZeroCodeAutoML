@@ -56,6 +56,62 @@ if uploaded_file:
                 else:
                     X_processed[col] = X_processed[col].fillna(X_processed[col].median())
 
+        # --- Model Selection ---
+        st.sidebar.subheader("🤖 Choose a Machine Learning Model")
+        model_options = {
+            "Linear Regression": "linear_regression",
+            "Logistic Regression": "logistic_regression",
+            "Decision Tree": "decision_tree",
+            "Random Forest": "random_forest",
+            "Gradient Boosting": "gradient_boosting",
+            "K-Nearest Neighbors": "knn",
+            "Support Vector Machine": "svm",
+            "XGBoost": "xgboost",
+            "Naive Bayes": "naive_bayes",
+            "Ridge Regression": "ridge",
+            "Lasso Regression": "lasso",
+            "ElasticNet": "elasticnet"
+        }
+        selected_model_name = st.sidebar.selectbox("📌 Select Model", list(model_options.keys()))
+        model_module_name = model_options[selected_model_name]
+
+        problem_type = 'regression'
+        if y.dtype == 'object' or str(y.dtype).startswith('category'):
+            problem_type = 'classification'
+    
+        if pd.api.types.is_numeric_dtype(y):
+            unique_values = y.nunique()
+            if unique_values <= 10:  # tweak threshold if needed
+                problem_type = 'classification'
+            else:
+                problem_type = 'regression'
+    
+
+        st.info(f"🔍 Detected problem type: **{problem_type.capitalize()}**")
+
+        # --- Validate Target Compatibility with Model ---
+        regression_only_models = [
+            "Linear Regression",
+            "Ridge Regression",
+            "Lasso Regression",
+            "ElasticNet"
+        ]
+
+        classification_only_models = [
+            "Logistic Regression",
+            "Naive Bayes"
+        ]
+
+        if selected_model_name in regression_only_models and problem_type != "regression":
+            st.warning(f"⚠️ **{selected_model_name}** is a **regression model** and requires a **numeric target**. But the selected target column **'{target_column}'** appears to be categorical or discrete.")
+            st.stop()
+
+        elif selected_model_name in classification_only_models and problem_type != "classification":
+            st.warning(f"⚠️ **{selected_model_name}** is a **classification model** and requires a **categorical/discrete target**. But **'{target_column}'** appears to be continuous.")
+            st.stop()
+
+            
+
         # Encode categorical columns
         for col in X_processed.select_dtypes(include=['object', 'category']).columns:
             le = LabelEncoder()
@@ -100,7 +156,6 @@ if uploaded_file:
 
 
         # Data Preprocessing
-        #st.subheader("⚙️ Preprocessing Options")
 
         use_feature_selection = st.checkbox("Drop low-variance features")
         variance_threshold = 0.01
@@ -136,24 +191,17 @@ if uploaded_file:
         else:
             st.info("No features were dropped.")
 
-
-
-        # --- Model Selection ---
-        st.sidebar.subheader("🤖 Choose a Machine Learning Model")
-        model_options = {
-            "Linear Regression": "linear_regression",
-            "Logistic Regression": "logistic_regression",
-            "Decision Tree": "decision_tree",
-            "Random Forest": "random_forest",
-            "Gradient Boosting": "gradient_boosting"
-        }
-        selected_model_name = st.sidebar.selectbox("📌 Select Model", list(model_options.keys()))
-        model_module_name = model_options[selected_model_name]
+        
+        
 
         # --- Import Model Dynamically ---
+        model_module_name = model_options[selected_model_name]
         model_module = importlib.import_module(f"models.{model_module_name}")
-        model_params = model_module.get_model_params_ui()
-        model = model_module.get_model(model_params)
+
+        model_params = model_module.get_model_params_ui(problem_type=problem_type)
+        model = model_module.get_model(model_params, problem_type=problem_type)
+
+
 
 
         # --- Model Training ---
@@ -182,7 +230,20 @@ if uploaded_file:
         if user_input_df is not None:
             user_scaled = scaler.transform(user_input_df)
             user_pred = model.predict(user_scaled)[0]
-            st.success(f"🎯 Predicted {target_column}: `{user_pred:.2f}`")
+
+            # Decode prediction if target was categorical
+            if 'target' in label_encoders:
+                user_pred = label_encoders['target'].inverse_transform([int(round(user_pred))])[0]  # type: ignore
+                st.success(f"🎯 Predicted {target_column}: `{user_pred}`")
+            else:
+                st.success(f"🎯 Predicted {target_column}: `{user_pred:.2f}`")
+
 
 else:
     st.info("👆 Upload a dataset to get started.")
+
+
+
+
+
+    

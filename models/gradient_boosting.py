@@ -1,11 +1,11 @@
 from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
 import streamlit as st
 
-def get_model_params_ui():
+def get_model_params_ui(problem_type):
     """
     Streamlit UI to get Gradient Boosting hyperparameters.
     """
-    problem_type = st.sidebar.radio("Problem Type", options=['regression', 'classification'])
+    
 
     n_estimators = st.sidebar.slider("Number of Trees (n_estimators)", 50, 500, 100, step=10)
     learning_rate = st.sidebar.slider("Learning Rate", 0.01, 1.0, 0.1, step=0.01, format="%.2f")
@@ -13,18 +13,18 @@ def get_model_params_ui():
     subsample = st.sidebar.slider("Subsample (for Stochastic Gradient Boosting)", 0.1, 1.0, 1.0, step=0.05, format="%.2f")
 
     return {
-        "problem_type": problem_type,
+        
         "n_estimators": n_estimators,
         "learning_rate": learning_rate,
         "max_depth": max_depth,
         "subsample": subsample
     }
 
-def get_model(params):
+def get_model(params, problem_type):
     """
     Instantiate and return a Gradient Boosting model based on parameters.
     """
-    if params["problem_type"] == "regression":
+    if problem_type == "regression":
         model = GradientBoostingRegressor(
             n_estimators=params["n_estimators"],
             learning_rate=params["learning_rate"],

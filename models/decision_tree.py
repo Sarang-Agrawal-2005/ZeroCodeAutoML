@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 import streamlit as st
 
-def get_model_params_ui():
+def get_model_params_ui(problem_type):
     """
     Display Streamlit widgets to select Decision Tree hyperparameters.
     """
@@ -10,8 +10,6 @@ def get_model_params_ui():
     min_samples_leaf = st.sidebar.slider("Minimum Samples Leaf", 1, 20, 1)
     criterion_options_reg = ['squared_error', 'friedman_mse', 'absolute_error', 'poisson']
     criterion_options_clf = ['gini', 'entropy', 'log_loss']
-
-    problem_type = st.sidebar.radio("Problem Type", options=['regression', 'classification'])
 
     if problem_type == 'regression':
         criterion = st.sidebar.selectbox("Criterion", criterion_options_reg, index=0)
@@ -23,14 +21,14 @@ def get_model_params_ui():
         'min_samples_split': min_samples_split,
         'min_samples_leaf': min_samples_leaf,
         'criterion': criterion,
-        'problem_type': problem_type
+        
     }
 
-def get_model(params):
+def get_model(params, problem_type):
     """
     Return a Decision Tree model instance (regressor or classifier) based on params.
     """
-    if params['problem_type'] == 'regression':
+    if problem_type == 'regression':
         model = DecisionTreeRegressor(
             max_depth=params['max_depth'],
             min_samples_split=params['min_samples_split'],
