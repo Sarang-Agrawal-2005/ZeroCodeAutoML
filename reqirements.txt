@@ -4,3 +4,4 @@ numpy>=1.23.0
 scikit-learn>=1.2.0
 matplotlib>=3.5.0
 seaborn>=0.12.0
+xgboost>=1.7.0  # Add this if you're using XGBoost
