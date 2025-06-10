@@ -1,13 +1,12 @@
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 import streamlit as st
 
-def get_model_params_ui():
+def get_model_params_ui(problem_type):
     """
     Use Streamlit widgets to collect model parameters dynamically.
     Returns a dictionary of parameters.
     """
     st.sidebar.markdown("### Random Forest Parameters")
-    problem_type = st.sidebar.radio("Problem Type", options=['regression', 'classification'])
 
     n_estimators = st.sidebar.slider("Number of Trees (n_estimators)", 10, 500, 100, step=10)
     max_depth = st.sidebar.slider("Max Depth of Trees", 1, 50, 10)
@@ -20,17 +19,16 @@ def get_model_params_ui():
     criterion = st.sidebar.selectbox("Criterion", criterion_options, index=0)
 
     return {
-        'problem_type': problem_type,
         'n_estimators': n_estimators,
         'max_depth': max_depth,
         'criterion': criterion
     }
 
-def get_model(params):
+def get_model(params, problem_type):
     """
     Instantiate and return a Random Forest model (regressor or classifier) based on params.
     """
-    if params['problem_type'] == 'regression':
+    if problem_type == 'regression':
         model = RandomForestRegressor(
             n_estimators=params['n_estimators'],
             max_depth=params['max_depth'],
