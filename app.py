@@ -37,10 +37,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Title ---
-st.markdown("<div class='main-title'>🔧 ZeroCodeAutoML</div>", unsafe_allow_html=True)
+#st.markdown("<div class='main-title'>🔧 ZeroCodeAutoML</div>", unsafe_allow_html=True)
 
 # --- File Upload ---
-st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+#st.markdown("<div class='block-box'>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📁 Upload CSV File", type="csv")
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -48,7 +48,7 @@ if uploaded_file:
     df = pd.read_csv(uploaded_file)
     df = df.dropna()
 
-    st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+    #st.markdown("<div class='block-box'>", unsafe_allow_html=True)
     st.subheader("📊 Dataset Preview")
     st.dataframe(df.head())
     st.markdown("</div>", unsafe_allow_html=True)
@@ -60,7 +60,7 @@ if uploaded_file:
     numeric_df = df_encoded.select_dtypes(include=[np.number])
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
-    st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+    #st.markdown("<div class='block-box'>", unsafe_allow_html=True)
     st.subheader("📌 Feature Correlation Heatmap")
     st.pyplot(fig)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -124,7 +124,7 @@ if uploaded_file:
         X = X_processed
         y = y_encoded
 
-        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+        #st.markdown("<div class='block-box'>", unsafe_allow_html=True)
         st.subheader("🔍 Feature Selection and Preprocessing")
 
         drop_high_corr = st.checkbox("Drop Highly Correlated Features", value=False)
@@ -166,7 +166,7 @@ if uploaded_file:
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 
-        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+        #st.markdown("<div class='block-box'>", unsafe_allow_html=True)
         st.subheader("📈 Model Evaluation Metrics")
         metrics = evaluate_model(y_test, y_pred)
         for k, v in metrics.items():
@@ -181,7 +181,7 @@ if uploaded_file:
         st.pyplot(fig)
         st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+        #st.markdown("<div class='block-box'>", unsafe_allow_html=True)
         st.subheader("🧮 Predict with Custom Input")
         user_input_df = get_user_input(X, label_encoders)
         if user_input_df is not None:
