@@ -6,27 +6,53 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
-
 from utils.preprocessing import preprocess_data, get_user_input, feature_selection_by_correlation
 from utils.evaluation import evaluate_model
 
-# --- App Setup ---
-st.set_page_config(layout="wide")
-st.title("🔧 ZeroCodeAutoML")
+# --- Page Config ---
+st.set_page_config(layout="wide", page_title="ZeroCodeAutoML")
+
+# --- Custom Styles ---
+st.markdown("""
+    <style>
+        .main-title {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            color: #4CAF50;
+            padding: 20px 0;
+        }
+        .block-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stButton > button {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Title ---
+st.markdown("<div class='main-title'>🔧 ZeroCodeAutoML</div>", unsafe_allow_html=True)
 
 # --- File Upload ---
+st.markdown("<div class='block-box'>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📁 Upload CSV File", type="csv")
+st.markdown("</div>", unsafe_allow_html=True)
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
-
-    # Drop missing values for simplicity
     df = df.dropna()
 
+    st.markdown("<div class='block-box'>", unsafe_allow_html=True)
     st.subheader("📊 Dataset Preview")
-    st.write(df.head())
+    st.dataframe(df.head())
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Correlation heatmap
     df_encoded = df.copy()
     for col in df_encoded.select_dtypes(include='object').columns:
         df_encoded[col] = LabelEncoder().fit_transform(df_encoded[col])
@@ -34,29 +60,25 @@ if uploaded_file:
     numeric_df = df_encoded.select_dtypes(include=[np.number])
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
+    st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+    st.subheader("📌 Feature Correlation Heatmap")
     st.pyplot(fig)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- Select Target Column ---
     target_column = st.selectbox("🎯 Select Target Column", df.columns)
-
-    
 
     if target_column:
         X = df.drop(columns=[target_column])
         y = df[target_column]
-
         label_encoders = {}
         X_processed = X.copy()
 
-        # Handle missing values
-        if True:
-            for col in X_processed.columns:
-                if X_processed[col].dtype == 'object':
-                    X_processed[col] = X_processed[col].fillna(X_processed[col].mode()[0])
-                else:
-                    X_processed[col] = X_processed[col].fillna(X_processed[col].median())
+        for col in X_processed.columns:
+            if X_processed[col].dtype == 'object':
+                X_processed[col] = X_processed[col].fillna(X_processed[col].mode()[0])
+            else:
+                X_processed[col] = X_processed[col].fillna(X_processed[col].median())
 
-        # --- Model Selection ---
         st.sidebar.subheader("🤖 Choose a Machine Learning Model")
         model_options = {
             "Linear Regression": "linear_regression",
@@ -73,52 +95,26 @@ if uploaded_file:
             "ElasticNet": "elasticnet"
         }
         selected_model_name = st.sidebar.selectbox("📌 Select Model", list(model_options.keys()))
-        model_module_name = model_options[selected_model_name]
 
         problem_type = 'regression'
-        if y.dtype == 'object' or str(y.dtype).startswith('category'):
+        if y.dtype == 'object' or str(y.dtype).startswith('category') or y.nunique() <= 10:
             problem_type = 'classification'
-    
-        if pd.api.types.is_numeric_dtype(y):
-            unique_values = y.nunique()
-            if unique_values <= 10:  # tweak threshold if needed
-                problem_type = 'classification'
-            else:
-                problem_type = 'regression'
-    
 
         st.info(f"🔍 Detected problem type: **{problem_type.capitalize()}**")
 
-        # --- Validate Target Compatibility with Model ---
-        regression_only_models = [
-            "Linear Regression",
-            "Ridge Regression",
-            "Lasso Regression",
-            "ElasticNet"
-        ]
-
-        classification_only_models = [
-            "Logistic Regression",
-            "Naive Bayes"
-        ]
-
-        if selected_model_name in regression_only_models and problem_type != "regression":
-            st.warning(f"⚠️ **{selected_model_name}** is a **regression model** and requires a **numeric target**. But the selected target column **'{target_column}'** appears to be categorical or discrete.")
+        if selected_model_name in ["Linear Regression", "Ridge Regression", "Lasso Regression", "ElasticNet"] and problem_type != "regression":
+            st.warning(f"⚠️ {selected_model_name} requires a numeric target.")
             st.stop()
 
-        elif selected_model_name in classification_only_models and problem_type != "classification":
-            st.warning(f"⚠️ **{selected_model_name}** is a **classification model** and requires a **categorical/discrete target**. But **'{target_column}'** appears to be continuous.")
+        if selected_model_name in ["Logistic Regression", "Naive Bayes"] and problem_type != "classification":
+            st.warning(f"⚠️ {selected_model_name} requires a categorical/discrete target.")
             st.stop()
 
-            
-
-        # Encode categorical columns
         for col in X_processed.select_dtypes(include=['object', 'category']).columns:
             le = LabelEncoder()
             X_processed[col] = le.fit_transform(X_processed[col].astype(str))
             label_encoders[col] = le
 
-        # Encode target if categorical
         y_encoded = y
         if y.dtype == 'object' or str(y.dtype).startswith('category'):
             le_target = LabelEncoder()
@@ -128,94 +124,54 @@ if uploaded_file:
         X = X_processed
         y = y_encoded
 
-        st.subheader("🔍 Feature Selection and Data Preprocessing")
+        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
+        st.subheader("🔍 Feature Selection and Preprocessing")
 
         drop_high_corr = st.checkbox("Drop Highly Correlated Features", value=False)
-        high_corr_threshold = None
-        if drop_high_corr:
-            high_corr_threshold = st.slider("High Correlation Threshold", min_value=0.5, max_value=0.99, value=0.8, step=0.01)
+        high_corr_threshold = st.slider("High Correlation Threshold", 0.5, 0.99, 0.8) if drop_high_corr else 0.8
 
-        drop_low_target_corr = st.checkbox("Drop Features Weakly Correlated with Target", value=False)
-        low_target_corr_threshold = None
-        if drop_low_target_corr:
-            low_target_corr_threshold = st.slider("Low Target Correlation Threshold", min_value=0.0, max_value=1.0, value=0.1, step=0.01)
+        drop_low_target_corr = st.checkbox("Drop Weakly Correlated Features", value=False)
+        low_target_corr_threshold = st.slider("Low Target Correlation Threshold", 0.0, 1.0, 0.1) if drop_low_target_corr else 0.1
 
         if not isinstance(y, pd.Series):
-            y = pd.Series(y)     # type: ignore
+            y = pd.Series(data=np.array(y))
 
-        # Apply correlation-based feature selection
-        X, dropped = feature_selection_by_correlation(
-            X,
-            y, # type: ignore
-            drop_high_corr=drop_high_corr,
-            high_corr_threshold=high_corr_threshold if high_corr_threshold is not None else 0.8,
-            drop_low_target_corr=drop_low_target_corr,
-            low_target_corr_threshold=low_target_corr_threshold if low_target_corr_threshold is not None else 0.1
-        )
-
-
-
-        # Data Preprocessing
+        X, dropped = feature_selection_by_correlation(X, y, drop_high_corr, high_corr_threshold, drop_low_target_corr, low_target_corr_threshold)
 
         use_feature_selection = st.checkbox("Drop low-variance features")
-        variance_threshold = 0.01
-        if use_feature_selection:
-            variance_threshold = st.slider("Variance threshold", 0.0, 0.1, 0.01)
+        variance_threshold = st.slider("Variance threshold", 0.0, 0.1, 0.01) if use_feature_selection else 0.0
 
         use_outlier_removal = st.checkbox("Remove outliers (IQR method)")
         use_pca = st.checkbox("Apply PCA (dimensionality reduction)")
-        n_components = None
-        if use_pca:
-            if X.shape[1] > 1:
-                n_components = st.slider(
-                    "Number of PCA components", 1, X.shape[1], max(1, int(X.shape[1] / 2))
-                )
-            else:
-                st.warning("Not enough features to apply PCA.")
-                use_pca = False  # Disable PCA since it’s invalid
+        n_components = st.slider("Number of PCA components", 1, X.shape[1], max(1, X.shape[1] // 2)) if use_pca and X.shape[1] > 1 else None
 
+        st.markdown("</div>", unsafe_allow_html=True)
 
-
-        # --- Preprocessing ---
         X_train, X_test, y_train, y_test, scaler, pca, dropped_variance = preprocess_data(
-            X, y, # type: ignore
-            variance_threshold=variance_threshold if use_feature_selection else 0.0,
-            remove_outliers=use_outlier_removal,
-            apply_pca=use_pca,
-            pca_components=n_components
-        )
+            X, y, variance_threshold, use_outlier_removal, use_pca, n_components)
 
-        all_dropped_features = set(dropped + dropped_variance)
-        if all_dropped_features:
-            st.success(f"Dropped {len(all_dropped_features)} features: {', '.join(all_dropped_features)}")
+        dropped_total = set(dropped + dropped_variance)
+        if dropped_total:
+            st.success(f"Dropped {len(dropped_total)} features: {', '.join(dropped_total)}")
         else:
             st.info("No features were dropped.")
 
-        
-        
-
-        # --- Import Model Dynamically ---
-        model_module_name = model_options[selected_model_name]
-        model_module = importlib.import_module(f"models.{model_module_name}")
+        model_module_path = f"models.{model_options[selected_model_name]}"
+        model_module = importlib.import_module(model_module_path)
 
         model_params = model_module.get_model_params_ui(problem_type=problem_type)
         model = model_module.get_model(model_params, problem_type=problem_type)
 
-
-
-
-        # --- Model Training ---
         with st.spinner("Training the model..."):
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 
-        # --- Evaluation ---
+        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
         st.subheader("📈 Model Evaluation Metrics")
         metrics = evaluate_model(y_test, y_pred)
         for k, v in metrics.items():
             st.markdown(f"- **{k}:** `{v}`")
 
-        # --- Actual vs Predicted ---
         st.subheader("📉 Actual vs Predicted")
         fig, ax = plt.subplots()
         sns.scatterplot(x=y_test, y=y_pred, ax=ax)
@@ -223,27 +179,21 @@ if uploaded_file:
         ax.set_xlabel("Actual")
         ax.set_ylabel("Predicted")
         st.pyplot(fig)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- Predict Custom Input ---
+        st.markdown("<div class='block-box'>", unsafe_allow_html=True)
         st.subheader("🧮 Predict with Custom Input")
         user_input_df = get_user_input(X, label_encoders)
         if user_input_df is not None:
             user_scaled = scaler.transform(user_input_df)
             user_pred = model.predict(user_scaled)[0]
 
-            # Decode prediction if target was categorical
             if 'target' in label_encoders:
-                user_pred = label_encoders['target'].inverse_transform([int(round(user_pred))])[0]  # type: ignore
+                user_pred = label_encoders['target'].inverse_transform([int(round(user_pred))])[0]
                 st.success(f"🎯 Predicted {target_column}: `{user_pred}`")
             else:
                 st.success(f"🎯 Predicted {target_column}: `{user_pred:.2f}`")
-
+        st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     st.info("👆 Upload a dataset to get started.")
-
-
-
-
-
-    
