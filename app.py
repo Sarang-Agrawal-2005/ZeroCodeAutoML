@@ -3,7 +3,6 @@ import streamlit as st
 # Page configuration - MUST be first Streamlit command
 st.set_page_config(
     page_title="ML Model Builder",
-    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -17,16 +16,16 @@ initialize_session_state()
 apply_custom_css()
 
 # Sidebar navigation
-st.sidebar.title("🚀 Navigation")
-st.sidebar.markdown("---")
+# st.sidebar.title("Navigation")
+# st.sidebar.markdown("---")
 
-if st.sidebar.button("📊 Data Upload & Analysis", use_container_width=True):
+if st.sidebar.button("Data Upload & Analysis", use_container_width=True):
     st.session_state.current_page = "Data Upload & Analysis"
-if st.sidebar.button("🔧 Data Preprocessing", use_container_width=True):
+if st.sidebar.button("Data Preprocessing", use_container_width=True):
     st.session_state.current_page = "Data Preprocessing"
-if st.sidebar.button("🤖 Model Training", use_container_width=True):
+if st.sidebar.button("Model Training", use_container_width=True):
     st.session_state.current_page = "Model Training"
-if st.sidebar.button("📈 Model Evaluation", use_container_width=True):
+if st.sidebar.button("Model Evaluation", use_container_width=True):
     st.session_state.current_page = "Model Evaluation"
 
 # Route to appropriate page
@@ -41,15 +40,13 @@ elif page == "Model Training":
 elif page == "Model Evaluation":
     model_evaluation.show_page()
 
-# Footer
-st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; color: #888; padding: 20px;'>
-        🤖 ML Model Builder | Built with Streamlit | 
-        <a href='#' style='color: #FF6B6B;'>Documentation</a> | 
-        <a href='#' style='color: #FF6B6B;'>GitHub</a>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+# # Footer
+# st.markdown("---")
+# st.markdown(
+#     """
+#     <div style='text-align: center; color: #888; padding: 20px;'>
+#         ZeroCodeAutoML | <a href='#' style='color: #FF6B6B;'>Documentation</a> | <a href='#' style='color: #FF6B6B;'>GitHub</a>
+#     </div>
+#     """, 
+#     unsafe_allow_html=True
+# )

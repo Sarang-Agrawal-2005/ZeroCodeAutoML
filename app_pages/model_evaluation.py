@@ -8,14 +8,14 @@ from sklearn.metrics import (accuracy_score, classification_report, mean_squared
 
 def show_page():
     """Display the Model Evaluation page"""
-    st.markdown('<h1 class="main-header">📈 Model Evaluation</h1>', unsafe_allow_html=True)
+    #st.markdown('<h1 class="main-header">📈 Model Evaluation</h1>', unsafe_allow_html=True)
     
     if not st.session_state.model_trained:
-        st.markdown('<div class="warning-message">⚠️ Please train a model first in the "Model Training" page.</div>', unsafe_allow_html=True)
+        st.info('''Please train a model first in the "Model Training" page''')
         st.stop()
     
     # Display model info
-    st.subheader("🤖 Model Information")
+    st.subheader("Model Information")
     results = st.session_state.training_results
     
     col1, col2, col3 = st.columns(3)
@@ -28,13 +28,13 @@ def show_page():
     
     # Check if we already have evaluation results
     if st.session_state.evaluation_completed and st.session_state.evaluation_results:
-        st.markdown('<div class="success-message">✅ Model evaluation results loaded</div>', unsafe_allow_html=True)
+        #st.markdown('<div class="success-message">✅ Model evaluation results loaded</div>', unsafe_allow_html=True)
         
         eval_results = st.session_state.evaluation_results
         problem_type = st.session_state.problem_type
         
         if problem_type == "classification":
-            st.subheader("🎯 Classification Metrics")
+            st.subheader("Classification Metrics")
             
             col1, col2, col3, col4 = st.columns(4)
             with col1:
@@ -46,14 +46,14 @@ def show_page():
             with col4:
                 st.metric("F1-Score", f"{eval_results['f1_score']:.4f}")
             
-            st.subheader("📊 Detailed Classification Report")
+            st.subheader("Detailed Classification Report")
             st.dataframe(eval_results['classification_report'], use_container_width=True)
             
-            st.subheader("🔥 Confusion Matrix")
+            st.subheader("Confusion Matrix")
             st.plotly_chart(eval_results['confusion_matrix_fig'], use_container_width=True)
             
         else:  # Regression
-            st.subheader("📊 Regression Metrics")
+            st.subheader("Regression Metrics")
             
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -63,10 +63,10 @@ def show_page():
             with col3:
                 st.metric("R² Score", f"{eval_results['r2']:.4f}")
             
-            st.subheader("📈 Actual vs Predicted Values")
+            st.subheader("Actual vs Predicted Values")
             st.plotly_chart(eval_results['scatter_fig'], use_container_width=True)
             
-            st.subheader("📉 Residuals Analysis")
+            st.subheader("Residuals Analysis")
             st.plotly_chart(eval_results['residuals_fig'], use_container_width=True)
     
     else:

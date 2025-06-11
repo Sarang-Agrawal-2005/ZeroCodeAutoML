@@ -3,20 +3,22 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
+
+
 def show_page():
     """Display the Data Upload & Analysis page"""
-    st.markdown('<h1 class="main-header">📊 Data Upload & Analysis</h1>', unsafe_allow_html=True)
+    #st.markdown('<h1 class="main-header">📊 Data Upload & Analysis</h1>', unsafe_allow_html=True)
     
     # Check if we already have analysis results
     if st.session_state.data is not None and st.session_state.data_analysis_results:
-        st.markdown('<div class="success-message">✅ Data analysis results loaded</div>', unsafe_allow_html=True)
+        #st.markdown('<div class="success-message">✅ Data analysis results loaded</div>', unsafe_allow_html=True)
         
         # Display preserved results
         df = st.session_state.data
         results = st.session_state.data_analysis_results
         
         # Display metrics
-        st.subheader("📋 Dataset Overview")
+        st.subheader("Dataset Overview")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("📏 Rows", results['rows'])
@@ -42,16 +44,16 @@ def show_page():
         
         # Display preserved visualizations
         if 'correlation_fig' in results:
-            st.subheader("🔥 Data Visualizations")
-            st.write("**Correlation Heatmap**")
+            #st.subheader("🔥 Data Visualizations")
+            st.subheader("**Correlation Heatmap**")
             st.plotly_chart(results['correlation_fig'], use_container_width=True)
         
         if 'distribution_fig' in results:
-            st.write("**Distribution Analysis**")
+            st.subheader("**Distribution Analysis**")
             st.plotly_chart(results['distribution_fig'], use_container_width=True)
             
         if 'missing_values_fig' in results:
-            st.write("**Missing Values Analysis**")
+            st.subheader("**Missing Values Analysis**")
             st.plotly_chart(results['missing_values_fig'], use_container_width=True)
     
     # File upload section

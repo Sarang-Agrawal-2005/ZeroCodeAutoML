@@ -39,15 +39,15 @@ def create_model_from_module(model_name, params, problem_type):
 
 def show_page():
     """Display the Model Training page"""
-    st.markdown('<h1 class="main-header">🤖 Model Training</h1>', unsafe_allow_html=True)
+    #st.markdown('<h1 class="main-header">🤖 Model Training</h1>', unsafe_allow_html=True)
     
     if not st.session_state.preprocessing_completed:
-        st.markdown('<div class="warning-message">⚠️ Please complete data preprocessing first in the "Data Preprocessing" page.</div>', unsafe_allow_html=True)
+        st.info('''Please complete data preprocessing first in the "Data Preprocessing" page''')
         st.stop()
     
     # Check if we already have training results
     if st.session_state.model_trained and st.session_state.training_results:
-        st.markdown('<div class="success-message">✅ Model training results loaded</div>', unsafe_allow_html=True)
+        #st.markdown('<div class="success-message">✅ Model training results loaded</div>', unsafe_allow_html=True)
         
         results = st.session_state.training_results
         
@@ -65,7 +65,7 @@ def show_page():
     problem_type = st.session_state.problem_type
     preprocessing_config = st.session_state.preprocessing_results['preprocessing_config']
     
-    st.subheader("🎯 Model Selection & Hyperparameters")
+    st.subheader("Model Selection & Hyperparameters")
     
     # Model selection
     if problem_type == 'classification':
@@ -117,7 +117,7 @@ def show_page():
         params = {}
     
     # Train button
-    if st.button("🚀 Train Model", use_container_width=True):
+    if st.button("Train Model", use_container_width=True):
         try:
             with st.spinner("Training model... Please wait"):
                 # Split the data

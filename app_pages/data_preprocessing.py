@@ -7,15 +7,15 @@ from utils.preprocessing import remove_outliers_iqr, feature_selection_by_correl
 
 def show_page():
     """Display the Data Preprocessing page"""
-    st.markdown('<h1 class="main-header">🔧 Data Preprocessing</h1>', unsafe_allow_html=True)
+    #st.markdown('<h1 class="main-header">🔧 Data Preprocessing</h1>', unsafe_allow_html=True)
     
     if st.session_state.data is None:
-        st.markdown('<div class="warning-message">⚠️ Please upload and analyze data first in the "Data Upload & Analysis" page.</div>', unsafe_allow_html=True)
+        st.info('''Please upload and analyze data first in the "Data Upload & Analysis" page''')
         st.stop()
     
     # Check if we already have preprocessing results
     if st.session_state.preprocessing_completed and st.session_state.preprocessing_results:
-        st.markdown('<div class="success-message">✅ Data preprocessing results loaded</div>', unsafe_allow_html=True)
+        #st.markdown('<div class="success-message">✅ Data preprocessing results loaded</div>', unsafe_allow_html=True)
         
         results = st.session_state.preprocessing_results
         
@@ -38,7 +38,7 @@ def show_page():
     df = st.session_state.data.copy()
     
     # Preprocessing configuration
-    st.subheader("⚙️ Preprocessing Configuration")
+    st.subheader("Preprocessing Configuration")
     
     col1, col2 = st.columns(2)
     
@@ -72,7 +72,7 @@ def show_page():
         st.info(f"🔍 Detected problem type: **{problem_type.capitalize()}**")
         
         # Preprocessing options
-        st.subheader("🔧 Preprocessing Options")
+        st.subheader("Preprocessing Options")
         
         # Create tabs for different preprocessing categories
         tab1, tab2, tab3, tab4 = st.tabs(["🧹 Data Cleaning", "🎯 Feature Selection", "📊 Scaling & Transform", "🔍 Dimensionality"])
@@ -82,10 +82,10 @@ def show_page():
             col1, col2 = st.columns(2)
             
             with col1:
-                handle_missing = st.selectbox("❓ Handle Missing Values", 
+                handle_missing = st.selectbox("Handle Missing Values", 
                                             ["Drop rows", "Drop columns (>50% missing)", "Fill with mean/mode"])
                 
-                remove_outliers = st.checkbox("🚫 Remove Outliers (IQR Method)", 
+                remove_outliers = st.checkbox("Remove Outliers (IQR Method)", 
                                             help="Remove outliers using the Interquartile Range method")
             
             with col2:
@@ -108,7 +108,7 @@ def show_page():
             
             col1, col2 = st.columns(2)
             with col1:
-                apply_variance_filter = st.checkbox("📉 Remove Low Variance Features")
+                apply_variance_filter = st.checkbox("Remove Low Variance Features")
                 if apply_variance_filter:
                     variance_threshold = st.slider("Variance Threshold", 0.0, 1.0, 0.01, 0.01,
                                                   help="Features with variance below this threshold will be removed")
@@ -116,7 +116,7 @@ def show_page():
                     variance_threshold = 0.0
             
             with col2:
-                apply_correlation_filter = st.checkbox("🔗 Correlation-based Selection")
+                apply_correlation_filter = st.checkbox("Correlation-based Selection")
                 if apply_correlation_filter:
                     drop_high_corr = st.checkbox("Drop highly correlated features", value=True)
                     if drop_high_corr:
@@ -137,23 +137,23 @@ def show_page():
         
         with tab3:
             st.write("**Scaling and Transformation**")
-            col1, col2 = st.columns(2)
+            col1, = st.columns(1)
             
             with col1:
-                scaling_method = st.selectbox("📏 Scaling Method", 
+                scaling_method = st.selectbox("Scaling Method", 
                                             ["StandardScaler", "MinMaxScaler", "None"],
                                             help="Choose how to scale numerical features")
             
-            with col2:
-                encode_categorical = st.checkbox("🏷️ Encode Categorical Variables", value=True,
-                                               help="Convert categorical variables to numerical using Label Encoding")
+            # with col2:
+            #     encode_categorical = st.checkbox("Encode Categorical Variables", value=True,
+            #                                    help="Convert categorical variables to numerical using Label Encoding")
         
         with tab4:
             st.write("**Dimensionality Reduction**")
             col1, col2 = st.columns(2)
             
             with col1:
-                apply_pca = st.checkbox("🎯 Apply PCA (Principal Component Analysis)")
+                apply_pca = st.checkbox("Apply PCA (Principal Component Analysis)")
                 if apply_pca:
                     pca_variance = st.slider("Explained Variance Ratio", 0.8, 0.99, 0.95, 0.01,
                                            help="Keep components that explain this much variance")
@@ -165,7 +165,7 @@ def show_page():
                     st.info(f"PCA will reduce dimensions while preserving {pca_variance*100:.0f}% of variance")
         
         # Preprocess button
-        if st.button("🚀 Apply Preprocessing", use_container_width=True):
+        if st.button("Apply Preprocessing", use_container_width=True):
             try:
                 with st.spinner("Applying preprocessing... Please wait"):
                     # Start preprocessing pipeline
@@ -213,7 +213,7 @@ def show_page():
                             st.info(f"Removed {outliers_removed} outliers using IQR method")
                     
                     # Step 3: Encode categorical variables
-                    if encode_categorical:
+                    if True:
                         categorical_columns = X_processed.select_dtypes(include=['object']).columns
                         for col in categorical_columns:
                             le = LabelEncoder()
@@ -271,7 +271,8 @@ def show_page():
                             'apply_pca': apply_pca,
                             'variance_threshold': variance_threshold,
                             'correlation_filter': apply_correlation_filter,
-                            'encode_categorical': encode_categorical
+                            'encode_categorical': True,  # Always encode categorical in this flow
+                            'drop_high_corr': drop_high_corr,   
                         }
                     })
                     
@@ -290,7 +291,7 @@ def show_page():
                     st.session_state.evaluation_completed = False
                     
                     # Display preprocessing summary
-                    st.success("🎉 Preprocessing completed successfully!")
+                    st.success("Preprocessing completed successfully!")
                     
                     col1, col2, col3 = st.columns(3)
                     with col1:
