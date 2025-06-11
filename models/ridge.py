@@ -2,14 +2,14 @@ from sklearn.linear_model import Ridge
 import streamlit as st
 
 def get_model_params_ui(problem_type):
-    st.sidebar.markdown("### Ridge Regression Parameters")
+    st.markdown("### Ridge Regression Parameters")
 
     if problem_type != 'regression':
         st.warning("⚠️ Ridge Regression supports regression only.")
         return {}
 
-    alpha = st.sidebar.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
-    solver = st.sidebar.selectbox(
+    alpha = st.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
+    solver = st.selectbox(
         "Solver",
         ["auto", "svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"],
         index=0

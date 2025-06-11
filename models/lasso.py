@@ -2,14 +2,14 @@ from sklearn.linear_model import Lasso
 import streamlit as st
 
 def get_model_params_ui(problem_type):
-    st.sidebar.markdown("### Lasso Regression Parameters")
+    st.markdown("### Lasso Regression Parameters")
 
     if problem_type != 'regression':
         st.warning("⚠️ Lasso Regression supports regression only.")
         return {}
 
-    alpha = st.sidebar.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
-    max_iter = st.sidebar.slider("Max Iterations", 100, 5000, 1000, step=100)
+    alpha = st.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
+    max_iter = st.slider("Max Iterations", 100, 5000, 1000, step=100)
 
     return {
         'alpha': alpha,

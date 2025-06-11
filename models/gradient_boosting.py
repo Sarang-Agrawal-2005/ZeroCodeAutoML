@@ -7,10 +7,10 @@ def get_model_params_ui(problem_type):
     """
     
 
-    n_estimators = st.sidebar.slider("Number of Trees (n_estimators)", 50, 500, 100, step=10)
-    learning_rate = st.sidebar.slider("Learning Rate", 0.01, 1.0, 0.1, step=0.01, format="%.2f")
-    max_depth = st.sidebar.slider("Max Depth of Trees", 1, 20, 3)
-    subsample = st.sidebar.slider("Subsample (for Stochastic Gradient Boosting)", 0.1, 1.0, 1.0, step=0.05, format="%.2f")
+    n_estimators = st.slider("Number of Trees (n_estimators)", 50, 500, 100, step=10)
+    learning_rate = st.slider("Learning Rate", 0.01, 1.0, 0.1, step=0.01, format="%.2f")
+    max_depth = st.slider("Max Depth of Trees", 1, 20, 3)
+    subsample = st.slider("Subsample (for Stochastic Gradient Boosting)", 0.1, 1.0, 1.0, step=0.05, format="%.2f")
 
     return {
         

@@ -7,17 +7,17 @@ def get_model_params_ui(problem_type):
     Use Streamlit widgets to collect model parameters dynamically.
     Returns a dictionary of parameters.
     """
-    st.sidebar.markdown("### K-Nearest Neighbors Parameters")
+    st.markdown("### K-Nearest Neighbors Parameters")
 
-    n_neighbors = st.sidebar.slider("Number of Neighbors (k)", 1, 50, 5)
-    weights = st.sidebar.selectbox("Weight Function", ['uniform', 'distance'])
+    n_neighbors = st.slider("Number of Neighbors (k)", 1, 50, 5)
+    weights = st.selectbox("Weight Function", ['uniform', 'distance'])
 
     if problem_type == 'regression':
         algorithm_options = ['auto', 'ball_tree', 'kd_tree', 'brute']
     else:
         algorithm_options = ['auto', 'ball_tree', 'kd_tree', 'brute']
 
-    algorithm = st.sidebar.selectbox("Algorithm", algorithm_options)
+    algorithm = st.selectbox("Algorithm", algorithm_options)
 
     return {
         'n_neighbors': n_neighbors,

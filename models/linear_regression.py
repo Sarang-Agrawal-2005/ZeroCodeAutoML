@@ -5,8 +5,8 @@ def get_model_params_ui(problem_type):
     """
     Display Streamlit UI widgets for Linear Regression parameters.
     """
-    fit_intercept = st.sidebar.checkbox("Fit Intercept", value=True)
-    n_jobs = st.sidebar.slider("Number of Jobs for parallelism (n_jobs)", 1, 8, 1)
+    fit_intercept = st.checkbox("Fit Intercept", value=True)
+    n_jobs = st.slider("Number of Jobs for parallelism (n_jobs)", 1, 8, 1)
 
     return {
         "fit_intercept": fit_intercept,

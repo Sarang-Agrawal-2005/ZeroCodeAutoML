@@ -2,15 +2,15 @@ from sklearn.linear_model import ElasticNet
 import streamlit as st
 
 def get_model_params_ui(problem_type):
-    st.sidebar.markdown("### ElasticNet Regression Parameters")
+    st.markdown("### ElasticNet Regression Parameters")
 
     if problem_type != 'regression':
         st.warning("⚠️ ElasticNet supports regression only.")
         return {}
 
-    alpha = st.sidebar.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
-    l1_ratio = st.sidebar.slider("L1 Ratio (between Lasso and Ridge)", 0.0, 1.0, 0.5, 0.01)
-    max_iter = st.sidebar.slider("Max Iterations", 100, 5000, 1000, step=100)
+    alpha = st.slider("Alpha (Regularization strength)", 0.0, 10.0, 1.0, 0.1)
+    l1_ratio = st.slider("L1 Ratio (between Lasso and Ridge)", 0.0, 1.0, 0.5, 0.01)
+    max_iter = st.slider("Max Iterations", 100, 5000, 1000, step=100)
 
     return {
         'alpha': alpha,

@@ -7,11 +7,11 @@ def get_model_params_ui(problem_type):
     Use Streamlit widgets to collect model parameters dynamically.
     Returns a dictionary of parameters.
     """
-    st.sidebar.markdown("### Support Vector Machine (SVM) Parameters")
+    st.markdown("### Support Vector Machine (SVM) Parameters")
 
-    C = st.sidebar.slider("Regularization Parameter (C)", 0.01, 10.0, 1.0, step=0.01)
-    kernel = st.sidebar.selectbox("Kernel", ['linear', 'poly', 'rbf', 'sigmoid'])
-    gamma = st.sidebar.selectbox("Gamma", ['scale', 'auto'])
+    C = st.slider("Regularization Parameter (C)", 0.01, 10.0, 1.0, step=0.01)
+    kernel = st.selectbox("Kernel", ['linear', 'poly', 'rbf', 'sigmoid'])
+    gamma = st.selectbox("Gamma", ['scale', 'auto'])
 
     params = {
         'C': C,

@@ -5,16 +5,16 @@ def get_model_params_ui(problem_type):
     """
     Display Streamlit widgets to select Decision Tree hyperparameters.
     """
-    max_depth = st.sidebar.slider("Maximum Depth", 1, 50, 10)
-    min_samples_split = st.sidebar.slider("Minimum Samples Split", 2, 20, 2)
-    min_samples_leaf = st.sidebar.slider("Minimum Samples Leaf", 1, 20, 1)
+    max_depth = st.slider("Maximum Depth", 1, 50, 10)
+    min_samples_split = st.slider("Minimum Samples Split", 2, 20, 2)
+    min_samples_leaf = st.slider("Minimum Samples Leaf", 1, 20, 1)
     criterion_options_reg = ['squared_error', 'friedman_mse', 'absolute_error', 'poisson']
     criterion_options_clf = ['gini', 'entropy', 'log_loss']
 
     if problem_type == 'regression':
-        criterion = st.sidebar.selectbox("Criterion", criterion_options_reg, index=0)
+        criterion = st.selectbox("Criterion", criterion_options_reg, index=0)
     else:
-        criterion = st.sidebar.selectbox("Criterion", criterion_options_clf, index=0)
+        criterion = st.selectbox("Criterion", criterion_options_clf, index=0)
 
     return {
         'max_depth': max_depth,
