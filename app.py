@@ -16,7 +16,7 @@ initialize_session_state()
 apply_custom_css()
 
 # Sidebar navigation
-st.sidebar.title("AutoML Pipeline")
+#st.sidebar.title("AutoML Pipeline")
 #st.sidebar.markdown("---")
 
 if st.sidebar.button("Data Upload & Analysis", use_container_width=True):

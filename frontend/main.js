@@ -86,13 +86,15 @@ function showPlatform() {
         streamlitSection.className = 'page';
         streamlitSection.innerHTML = `
             <div class="platform-container">
-                <div class="platform-section">
+                <div class="platform-section" style="position: relative;">
                     <div class="section-header">
-                        <button onclick="showLanding()" class="btn btn-outline">
+                        <button onclick="showLanding()" class="btn btn-outline"
+                                style="position: absolute; top: 1rem; right: 1rem;">
                             <i class="fas fa-arrow-left"></i> Back to Home
                         </button>
-                        <h2>AutoML Platform</h2>
-                        <p>Build your machine learning models with our no-code interface</p>
+
+                        <h2>AutoML Pipeline</h2>
+                        
                     </div>
                     <div id="loadingIndicator" style="text-align: center; padding: 2rem;">
                         <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
