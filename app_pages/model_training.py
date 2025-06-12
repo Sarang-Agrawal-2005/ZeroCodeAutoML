@@ -42,22 +42,22 @@ def show_page():
     #st.markdown('<h1 class="main-header">🤖 Model Training</h1>', unsafe_allow_html=True)
     
     if not st.session_state.preprocessing_completed:
-        st.info('''Please complete data preprocessing first in the "Data Preprocessing" page''')
+        st.info('''Please prepare your dataset first in the "Dataset Preparation" page''')
         st.stop()
     
     # Check if we already have training results
-    if st.session_state.model_trained and st.session_state.training_results:
-        #st.markdown('<div class="success-message">✅ Model training results loaded</div>', unsafe_allow_html=True)
+    # if st.session_state.model_trained and st.session_state.training_results:
+    #     #st.markdown('<div class="success-message">✅ Model training results loaded</div>', unsafe_allow_html=True)
         
-        results = st.session_state.training_results
+    #     results = st.session_state.training_results
         
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.info(f"**Model:** {results['model_name']}")
-        with col2:
-            st.info(f"**Problem Type:** {results['problem_type']}")
-        with col3:
-            st.metric("Training Score", f"{results.get('training_score', 0):.4f}")
+    #     col1, col2, col3 = st.columns(3)
+    #     with col1:
+    #         st.info(f"**Model:** {results['model_name']}")
+    #     with col2:
+    #         st.info(f"**Problem Type:** {results['problem_type']}")
+    #     with col3:
+    #         st.metric("Training Score", f"{results.get('training_score', 0):.4f}")
     
     # Get preprocessed data
     X_processed = st.session_state.X_processed
@@ -70,12 +70,12 @@ def show_page():
     # Model selection
     if problem_type == 'classification':
         model_options = [
-            "Random Forest", "Logistic Regression", "Decision Tree", "SVM", 
+            "Logistic Regression","Random Forest", "Decision Tree", "SVM", 
             "K-Nearest Neighbors", "Gradient Boosting", "Naive Bayes", "XGBoost"
         ]
     else:
         model_options = [
-            "Random Forest", "Linear Regression", "Decision Tree", "SVM", 
+            "Linear Regression","Random Forest", "Decision Tree", "SVM", 
             "K-Nearest Neighbors", "Gradient Boosting", "Ridge Regression", 
             "Lasso Regression", "XGBoost", "ElasticNet"
         ]

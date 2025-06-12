@@ -55,6 +55,8 @@ def show_page():
         if 'missing_values_fig' in results:
             st.subheader("**Missing Values Analysis**")
             st.plotly_chart(results['missing_values_fig'], use_container_width=True)
+
+        st.success('''Data analysis completed, you can now move on to the "Dataset Preparation" page to prepare your dataset for modeling.''', icon="✅")        
     
     # File upload section
     st.subheader("📁 Upload Your Dataset")

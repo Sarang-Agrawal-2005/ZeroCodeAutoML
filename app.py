@@ -9,20 +9,20 @@ st.set_page_config(
 
 from utils.session_state import initialize_session_state
 from utils.styling import apply_custom_css
-from app_pages import data_upload, data_preprocessing, model_training, model_evaluation
+from app_pages import data_upload, dataset_preparation, model_training, model_evaluation
 
 # Initialize session state and apply styling
 initialize_session_state()
 apply_custom_css()
 
 # Sidebar navigation
-# st.sidebar.title("Navigation")
-# st.sidebar.markdown("---")
+st.sidebar.title("AutoML Pipeline")
+#st.sidebar.markdown("---")
 
 if st.sidebar.button("Data Upload & Analysis", use_container_width=True):
     st.session_state.current_page = "Data Upload & Analysis"
-if st.sidebar.button("Data Preprocessing", use_container_width=True):
-    st.session_state.current_page = "Data Preprocessing"
+if st.sidebar.button("Dataset Preparation", use_container_width=True):
+    st.session_state.current_page = "Dataset Preparation"
 if st.sidebar.button("Model Training", use_container_width=True):
     st.session_state.current_page = "Model Training"
 if st.sidebar.button("Model Evaluation", use_container_width=True):
@@ -33,8 +33,8 @@ page = st.session_state.current_page
 
 if page == "Data Upload & Analysis":
     data_upload.show_page()
-elif page == "Data Preprocessing":
-    data_preprocessing.show_page()
+elif page == "Dataset Preparation":
+    dataset_preparation.show_page()
 elif page == "Model Training":
     model_training.show_page()
 elif page == "Model Evaluation":
