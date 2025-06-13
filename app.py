@@ -9,7 +9,7 @@ st.set_page_config(
 
 from utils.session_state import initialize_session_state
 from utils.styling import apply_custom_css
-from app_pages import data_upload, dataset_preparation, model_training, model_evaluation
+from app_pages import data_upload, dataset_preparation, model_training, model_evaluation, export_model
 
 # Initialize session state and apply styling
 initialize_session_state()
@@ -27,6 +27,8 @@ if st.sidebar.button("Model Training", use_container_width=True):
     st.session_state.current_page = "Model Training"
 if st.sidebar.button("Model Evaluation", use_container_width=True):
     st.session_state.current_page = "Model Evaluation"
+if st.sidebar.button("Export Model", use_container_width=True):
+    st.session_state.current_page = "Export Model"    
 
 # Route to appropriate page
 page = st.session_state.current_page
@@ -39,7 +41,8 @@ elif page == "Model Training":
     model_training.show_page()
 elif page == "Model Evaluation":
     model_evaluation.show_page()
-
+elif page == "Export Model":
+    export_model.show_page()
 # # Footer
 # st.markdown("---")
 # st.markdown(
